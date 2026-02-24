@@ -1,0 +1,27 @@
+{
+  "name": "roomio",
+  "version": "1.0.0",
+  "description": "Roomio is a **full-stack Airbnb-style booking platform** built with **Node.js, Express, MongoDB, and EJS**, with **HTML, CSS, and JavaScript** for the frontend. This project demonstrates a complete development workflow including **user authentication, database integration, and dynamic rendering**.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aazmeer-official/Roomio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aazmeer-official/Roomio/issues"
+  },
+  "homepage": "https://github.com/aazmeer-official/Roomio#readme",
+  "dependencies": {
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "method-override": "^3.0.0",
+    "mongoose": "^9.2.2"
+  }
+}
