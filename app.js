@@ -6,14 +6,18 @@ const path = require("path");
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const Listing = require("./models/Listing.js")
+const ejsMate = require('ejs-mate');
 
 // EXPRESS REQUIREMENTS
 
 app.use(express.urlencoded({extended:true}))  //For Parsing
+app.use(express.static(path.join(__dirname,"public"))) // For connecting Public Folder
 app.set("view engine", "ejs") //For setting view engine
 app.set("views",path.join(__dirname,"views")) //For conecting views folder
-app.use(express.static(path.join(__dirname,"public"))) // For connecting Public Folder
 app.use(methodOverride('_method'))
+
+// use ejs-locals for all ejs templates:
+app.engine('ejs', ejsMate);
 
 // DATABASE REQUIREMENTS
 
@@ -35,13 +39,13 @@ app.get("/",(req,res)=>{
 // Index Route
 app.get("/listing",async (req,res)=>{
     let datas = await Listing.find()
-    res.render("listing.ejs",{datas})
+    res.render("listings/listing.ejs",{datas})
 })
 
 
 // New Hotel Route - Specific Route
 app.get("/listing/new",async (req,res)=>{
-    res.render("new.ejs")
+    res.render("listings/new.ejs")
 })
 
 // Note Specific Route ka hameesha dynamic sy upar rkho
@@ -73,14 +77,14 @@ app.delete("/listing/:id",async(req,res)=>{
 app.get("/listing/:id/edit",async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
-    res.render("edit.ejs",{data})
+    res.render("listings/edit.ejs",{data})
 })
 
 // Show Route - Dynamic Route
 app.get("/listing/:id",async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
-    res.render("show.ejs",{data})
+    res.render("listings/show.ejs",{data})
 })
 
 

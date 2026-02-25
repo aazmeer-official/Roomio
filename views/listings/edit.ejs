@@ -1,0 +1,41 @@
+<% layout('/layouts/boilerplate') -%>
+<body>
+        <form action="/listing/<%= data.id %>?_method=PUT" method="post">
+        <h3 class="mt-5">Update listing</h3>
+        <div class="col-8 offset-2">
+        <div class="mt-3">        
+            <label for="title" class="form-label">Give some Title</label>
+            <input type="text" name="title" id="title" placeholder="Add a Title" class="form-control" value="<%= data.title %>" required >
+        </div>
+
+        <div class="mt-3">
+            <label for="description" class="form-label">Give some Description</label>
+            <textarea name="description" id="description" placeholder="Add Description"  class="form-control" required><%= data.description %></textarea>
+        </div>
+
+        <div class="mt-3">
+            <label for="image" class="form-label">Add Image URL/Link</label>
+            <input type="text" name="image" id="Image" placeholder="Add Image URL"   class="form-control"  value="<%= data.image %>" required>
+        </div>
+        <div class="row">
+        <div class="mt-3 col-md-4">
+            <label for="price" class="form-label">Price </label>
+            <input type="number" name="price" id="price" placeholder="Add some Price"  class="form-control"  value="<%= data.price %>" required>
+        </div>
+
+        <div class="mt-3 col-md-8 ">
+            <label for="location" class="form-label">Add Location</label>
+            <input type="text" name="location" id="location" placeholder="Location"  class="form-control"  value="<%= data.location %>">
+        </div>
+        </div>
+        <div class="mt-3">
+            <label for="country" class="form-label">Add Country</label>
+            <input type="text" name="country" id="country" placeholder="Add Country" class="form-control"  value="<%= data.country %>">
+        </div>
+        <div class="mb-3 mt-3">
+            <button type="submit" class="btn btn-dark add-btn">Submit</button>
+        </div>
+        </div>
+    </div>
+    </form>
+</body>
