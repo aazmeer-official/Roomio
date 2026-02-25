@@ -10,7 +10,7 @@
     <li><%= data._id %></li>
     <li><%= data.title  %></li>
     <li><%= data.description %></li>
-    <li>PKR <%= data.price %></li>
+    <li>PKR <%= data.price.toLocaleString('en-IN') %></li>
     <li><%= data.location %></li>
     <li><%= data.country %></li>
 </ul>

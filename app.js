@@ -38,12 +38,29 @@ app.get("/listing",async (req,res)=>{
     res.render("listing.ejs",{datas})
 })
 
-// Show Route
+
+// New Hotel Route - Specific Route
+app.get("/listing/new",async (req,res)=>{
+    res.render("new.ejs")
+})
+
+// Note Specific Route ka hameesha dynamic sy upar rkho
+
+// Adding DATA - POST Route
+
+app.post("/listing",async (req,res)=>{
+    let data = req.body;
+    await Listing.insertOne(data)
+    res.redirect("/listing")
+})
+
+// Show Route - Dynamic Route
 app.get("/listing/:id",async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
     res.render("show.ejs",{data})
 })
+
 
 // Listening
 app.listen(port,()=>{
