@@ -54,6 +54,28 @@ app.post("/listing",async (req,res)=>{
     res.redirect("/listing")
 })
 
+// Editing Using PUT Request
+app.put("/listing/:id",async(req,res)=>{
+    let {id} = req.params;
+    await Listing.findByIdAndUpdate(id,req.body)
+    res.redirect("/listing")
+})
+
+// Deleting Using DELETE Request
+app.delete("/listing/:id",async(req,res)=>{
+    let {id} = req.params;
+    await Listing.findByIdAndDelete(id)
+    res.redirect("/listing")
+})
+
+// Editing with Dynamic Route
+
+app.get("/listing/:id/edit",async (req,res)=>{
+    let {id} = req.params;
+    let data = await Listing.findById(id)
+    res.render("edit.ejs",{data})
+})
+
 // Show Route - Dynamic Route
 app.get("/listing/:id",async (req,res)=>{
     let {id} = req.params;

@@ -16,5 +16,12 @@
 </ul>
     <img src="<%= data.image %>">
 
+    <a href="/listing/<%= data._id  %>/edit">Edit It</a>
+    <br>
+
+    <form action="/listing/<%= data.id %>?_method=DELETE" method="post">
+        <button type="submit">Delete It</button>
+    </form>
+
 </body>
 </html>
