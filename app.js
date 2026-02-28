@@ -87,6 +87,13 @@ app.get("/listing/:id",async (req,res)=>{
     res.render("listings/show.ejs",{data})
 })
 
+// Adding an Error Handling Middleware
+
+app.use((err,req,res,next)=>{
+    let{status=500,message} = err;
+    res.status(status).send(message)
+    next()
+})
 
 // Listening
 app.listen(port,()=>{
