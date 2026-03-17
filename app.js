@@ -10,7 +10,7 @@ const ejsMate = require('ejs-mate');
 const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
 const {listingSchemas} = require("./schema.js")
-
+const Review = require("./models/review.js")
 // EXPRESS REQUIREMENTS
 
 app.use(express.urlencoded({extended:true}))  //For Parsing
@@ -99,8 +99,20 @@ app.get("/listing/:id/edit",wrapAsync(async (req,res)=>{
 app.get("/listing/:id",wrapAsync(async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
-    res.render("listings/show.ejs",{data})
+    let reviews = await Review.find({_id:{$in:data.reviews}})
+    res.render("listings/show.ejs",{data,reviews})
 }))
+// Addition of Reviews - POST Route
+app.post("/listing/:id/reviews",async (req,res)=>{
+    let data = req.body.review;
+    let listing = await Listing.findById(req.params.id)
+    let newReview = new Review(data)
+    listing.reviews.push(newReview)
+    await newReview.save()
+    await listing.save()
+    console.log("New Review Saved")
+    res.redirect(`/listing/${req.params.id}`)
+})
 // 404 Page Error Throw 
 // If the user is sending the request on any page which doesnot exist so we will use it
 // app.all with * will check all above routes first and then will give the response if any of the above response doesnot match 

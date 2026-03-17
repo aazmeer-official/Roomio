@@ -10,3 +10,4 @@ module.exports.listingSchemas = Joi.object({
         image: Joi.string().allow("",null)
     }).required()
 });        
+  
