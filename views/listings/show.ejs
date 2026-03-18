@@ -25,10 +25,7 @@
     </form>
 </div>
  
-    <% for(review of reviews){  %>
-        <p><%= review.comment %></p>
-        <p><%= review.rating %></p>
-    <%}%>
+
 <hr>
     <div class="col-8 offset-3 mt-5">
         <h4>Leave a Review</h4>
@@ -55,5 +52,9 @@
             </div>
         </form>
     </div>
-
+    <hr>
+    <% for(review of reviews){  %>
+        <p><%= review.comment %></p>
+        <p><%= review.rating %></p>
+    <%}%>
 </body>

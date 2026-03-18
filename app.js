@@ -10,6 +10,7 @@ const ejsMate = require('ejs-mate');
 const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
 const {listingSchemas} = require("./schema.js")
+const {reviewSchema} = require("./schema.js")
 const Review = require("./models/review.js")
 // EXPRESS REQUIREMENTS
 
@@ -32,15 +33,26 @@ async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/roomio');
 }
 
-// Joi Validation Function
+// Joi Validation Function - Listing
     validateListing = async(req,res,next)=>{
             try {
         const value = await listingSchemas.validateAsync(req.body);
+        next()
     }
     catch (err) {
-        throw new ExpressError(400, err.message)
+        next(new ExpressError(400, err.message));
+        
      }
     }
+// Joi Validation Function - Reviews
+validateReviews = async (req, res, next) => {
+    try {
+        await reviewSchema.validateAsync(req.body);
+        next(); // CRITICAL: Move to the next middleware/route
+    } catch (err) {
+        next(new ExpressError(400, err.message)); // Pass error to Express error handler
+    }
+};
 
 // Express App
 
@@ -67,7 +79,6 @@ app.get("/listing/new",wrapAsync(async (req,res)=>{
 
 
 app.post("/listing",validateListing,wrapAsync(async (req,res)=>{
-    console.log(rescult)
     let data = req.body.listing;
     await Listing.insertOne(data)
     res.redirect("/listing")
@@ -95,24 +106,25 @@ app.get("/listing/:id/edit",wrapAsync(async (req,res)=>{
     res.render("listings/edit.ejs",{data})
 }))
 
-// Show Route - Dynamic Route
-app.get("/listing/:id",wrapAsync(async (req,res)=>{
-    let {id} = req.params;
-    let data = await Listing.findById(id)
-    let reviews = await Review.find({_id:{$in:data.reviews}})
-    res.render("listings/show.ejs",{data,reviews})
-}))
 // Addition of Reviews - POST Route
-app.post("/listing/:id/reviews",async (req,res)=>{
+app.post("/listing/:id/reviews",validateReviews,wrapAsync(async (req,res)=>{
     let data = req.body.review;
     let listing = await Listing.findById(req.params.id)
     let newReview = new Review(data)
     listing.reviews.push(newReview)
     await newReview.save()
     await listing.save()
-    console.log("New Review Saved")
     res.redirect(`/listing/${req.params.id}`)
-})
+}));
+
+// Show Route - Dynamic Route
+app.get("/listing/:id",wrapAsync(async (req,res)=>{
+    let {id} = req.params;
+    let data = await Listing.findById(id)
+    let reviews = await Review.find({_id:{$in:data.reviews}})
+    res.render("listings/show.ejs",{data,reviews})
+}))                                                  
+
 // 404 Page Error Throw 
 // If the user is sending the request on any page which doesnot exist so we will use it
 // app.all with * will check all above routes first and then will give the response if any of the above response doesnot match 
