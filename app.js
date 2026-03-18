@@ -106,6 +106,14 @@ app.get("/listing/:id/edit",wrapAsync(async (req,res)=>{
     res.render("listings/edit.ejs",{data})
 }))
 
+// Show Route - Dynamic Route
+app.get("/listing/:id",wrapAsync(async (req,res)=>{
+    let {id} = req.params;
+    let data = await Listing.findById(id)
+    let reviews = await Review.find({_id:{$in:data.reviews}})
+    res.render("listings/show.ejs",{data,reviews})
+}))                                                  
+// Reviews
 // Addition of Reviews - POST Route
 app.post("/listing/:id/reviews",validateReviews,wrapAsync(async (req,res)=>{
     let data = req.body.review;
@@ -117,13 +125,14 @@ app.post("/listing/:id/reviews",validateReviews,wrapAsync(async (req,res)=>{
     res.redirect(`/listing/${req.params.id}`)
 }));
 
-// Show Route - Dynamic Route
-app.get("/listing/:id",wrapAsync(async (req,res)=>{
-    let {id} = req.params;
-    let data = await Listing.findById(id)
-    let reviews = await Review.find({_id:{$in:data.reviews}})
-    res.render("listings/show.ejs",{data,reviews})
-}))                                                  
+// Deletion of Reviews - Delete Route 
+
+app.delete("/listing/:id/reviews/:reviewId",wrapAsync(async (req,res)=>{
+    let {id,reviewId} = req.params
+    await Review.findByIdAndDelete(reviewId)
+    await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}})
+    res.redirect(`/listing/${id}`)
+}));
 
 // 404 Page Error Throw 
 // If the user is sending the request on any page which doesnot exist so we will use it
