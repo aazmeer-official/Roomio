@@ -11,6 +11,18 @@ const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
 const listing = require("./routes/listing");
 const reviews = require("./routes/reviews");
+const session = require('express-session')
+const flash = require('connect-flash');
+const sessionOptions = {
+    secret: "mysupersecretstring",
+    resave:false,
+    saveUninitialized:true,
+    cookie : {
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 3,
+        maxAge: 1000 * 60 * 60 * 24 * 3,
+        httpOnly: true
+    }
+};
 
 // EXPRESS REQUIREMENTS
 
@@ -19,6 +31,10 @@ app.use(express.static(path.join(__dirname,"public"))) // For connecting Public 
 app.set("view engine", "ejs") //For setting view engine
 app.set("views",path.join(__dirname,"views")) //For conecting views folder
 app.use(methodOverride('_method'))
+app.use(session(sessionOptions));
+app.use(flash());
+
+
 
 // use ejs-locals for all ejs templates:
 app.engine('ejs', ejsMate);
