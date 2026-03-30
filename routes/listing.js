@@ -38,12 +38,13 @@ router.get("/new",wrapAsync(async (req,res)=>{
 // Error Handled as Async Function so adding Next in the catch 
 
 
-router.post("/",validateListing,wrapAsync(async (req,res)=>{
-    let data = req.body.listing;
-    await Listing.insertOne(data)
-    req.flash("success", "New Listing Created") // Always use flash before redirection
-    res.redirect("/listing")
-}))
+// Adding DATA - POST Route
+router.post("/", validateListing, wrapAsync(async (req, res) => {
+    let newListing = new Listing(req.body.listing); // Create instance
+    await newListing.save(); // Save to DB
+    req.flash("success", "New Listing Created");
+    res.redirect("/listing");
+}));
 
 // Editing Using PUT Request
 router.put("/:id",validateListing,wrapAsync(async(req,res)=>{
@@ -66,20 +67,26 @@ router.delete("/:id",wrapAsync(async(req,res)=>{
 router.get("/:id/edit",wrapAsync(async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
+    if(!data){
+    req.flash("error", "Listing Doesnot Exist!");
+    res.redirect("/listing");
+    }else{
     res.render("listings/edit.ejs",{data})
+    }
 }))
 
 // Show Route - Dynamic Route
 router.get("/:id",wrapAsync(async (req,res)=>{
     let {id} = req.params;
-    let data = await Listing.findById(id)
-    let reviews = await Review.find({_id:{$in:data.reviews}})
+    let data = await Listing.findById(id).populate("reviews")
     // Agar kissi unknown yan deleted listing ki baat ho rahi ho
     if(!data){
         req.flash("error", "Listing Doesnot Exist!");
-        res.redirect("/listings");
+        res.redirect("/listing");
+    }else{
+    res.render("listings/show.ejs",{data})
     }
-    res.render("listings/show.ejs",{data,reviews})
+
 }))
 
 module.exports = router;
