@@ -11,7 +11,8 @@ const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
 const listing = require("./routes/listing");
 const reviews = require("./routes/reviews");
-const session = require('express-session')
+const session = require('express-session') // Using Session for making a temporary cookie
+// Using Flash
 const flash = require('connect-flash');
 const sessionOptions = {
     secret: "mysupersecretstring",
@@ -31,31 +32,40 @@ app.use(express.static(path.join(__dirname,"public"))) // For connecting Public 
 app.set("view engine", "ejs") //For setting view engine
 app.set("views",path.join(__dirname,"views")) //For conecting views folder
 app.use(methodOverride('_method'))
-app.use(session(sessionOptions));
-app.use(flash());
-
-
-
-// use ejs-locals for all ejs templates:
-app.engine('ejs', ejsMate);
-
-// DATABASE REQUIREMENTS
-
-main()
-.then(()=>{console.log("connection Successful")})
-.catch(err => console.log(err));
-
-async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/roomio');
-}
+app.use(session(sessionOptions)); //Creating Session Cookie and adding Session Options
 
 
 
 // Express App
     app.get("/",(req,res)=>{
         res.send("response!")
-    })                                          
+    }) 
 
+
+// Using Flash
+app.use(flash());  
+
+// Remember Flash Middleware should always be above the Express Routes
+
+// use ejs-locals for all ejs templates:
+app.engine('ejs', ejsMate);
+
+// DATABASE REQUIREMENTS
+main()
+.then(()=>{console.log("connection Successful")})
+.catch(err => console.log(err));
+async function main() {
+  await mongoose.connect('mongodb://127.0.0.1:27017/roomio');
+}
+
+// Creating Middleware for Flash  - Locals
+app.use((req,res,next)=>{
+    res.locals.success = req.flash("success")
+    res.locals.error = req.flash("error")
+    next() //Important to call next
+})
+                                         
+// Express Routes
     app.use("/listing", listing);
     app.use("/listing/:id/reviews", reviews);
 

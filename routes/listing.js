@@ -41,6 +41,7 @@ router.get("/new",wrapAsync(async (req,res)=>{
 router.post("/",validateListing,wrapAsync(async (req,res)=>{
     let data = req.body.listing;
     await Listing.insertOne(data)
+    req.flash("success", "New Listing Created") // Always use flash before redirection
     res.redirect("/listing")
 }))
 
@@ -48,6 +49,7 @@ router.post("/",validateListing,wrapAsync(async (req,res)=>{
 router.put("/:id",validateListing,wrapAsync(async(req,res)=>{
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id,req.body.listing)
+    req.flash("success", "Listing Updated Successfully!")
     res.redirect("/listing")
 }))
 
@@ -55,6 +57,7 @@ router.put("/:id",validateListing,wrapAsync(async(req,res)=>{
 router.delete("/:id",wrapAsync(async(req,res)=>{
     let {id} = req.params;
     await Listing.findByIdAndDelete(id)
+    req.flash("success", "Listing Deleted Succesfully")
     res.redirect("/listing")
 }))
 
@@ -71,6 +74,11 @@ router.get("/:id",wrapAsync(async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
     let reviews = await Review.find({_id:{$in:data.reviews}})
+    // Agar kissi unknown yan deleted listing ki baat ho rahi ho
+    if(!data){
+        req.flash("error", "Listing Doesnot Exist!");
+        res.redirect("/listings");
+    }
     res.render("listings/show.ejs",{data,reviews})
 }))
 
