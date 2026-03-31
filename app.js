@@ -12,6 +12,14 @@ const ExpressError = require("./utils/ExpressError.js")
 const listing = require("./routes/listing");
 const reviews = require("./routes/reviews");
 const session = require('express-session') // Using Session for making a temporary cookie
+
+
+// Passport - Authentication
+const passport = require('passport')
+const LocalStrategy = require("passport-local")
+const User = require("./models/User.js")
+
+
 // Using Flash
 const flash = require('connect-flash');
 const sessionOptions = {
@@ -32,9 +40,7 @@ app.use(express.static(path.join(__dirname,"public"))) // For connecting Public 
 app.set("view engine", "ejs") //For setting view engine
 app.set("views",path.join(__dirname,"views")) //For conecting views folder
 app.use(methodOverride('_method'))
-app.use(session(sessionOptions)); //Creating Session Cookie and adding Session Options
-
-
+app.engine('ejs', ejsMate);  // use ejs-locals for all ejs templates:
 
 // Express App
     app.get("/",(req,res)=>{
@@ -43,12 +49,27 @@ app.use(session(sessionOptions)); //Creating Session Cookie and adding Session O
 
 
 // Using Flash
+app.use(session(sessionOptions)); //Creating Session Cookie and adding Session Options
 app.use(flash());  
+
+// Passport - Configuration
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Use passport.use() for strategies, NOT app.use()
+passport.use(new LocalStrategy(User.authenticate())); 
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Remember Flash Middleware should always be above the Express Routes
 
-// use ejs-locals for all ejs templates:
-app.engine('ejs', ejsMate);
+// Creating Middleware for Flash  - Locals
+app.use((req,res,next)=>{
+    res.locals.success = req.flash("success")
+    res.locals.error = req.flash("error")
+    next() //Important to call next
+})
+
 
 // DATABASE REQUIREMENTS
 main()
@@ -58,11 +79,15 @@ async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/roomio');
 }
 
-// Creating Middleware for Flash  - Locals
-app.use((req,res,next)=>{
-    res.locals.success = req.flash("success")
-    res.locals.error = req.flash("error")
-    next() //Important to call next
+// Demo User 
+
+app.get("/demouser", async(req,res)=>{
+    let fakeUser = new User({
+        email: "student@gmail.com",
+        username:"delta-student",
+    });
+    const registeredUser = await User.register(fakeUser,"HelloWorld")
+    res.send(registeredUser)
 })
                                          
 // Express Routes
