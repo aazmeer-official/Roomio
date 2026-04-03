@@ -9,8 +9,9 @@ const Listing = require("./models/Listing.js")
 const ejsMate = require('ejs-mate');
 const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
-const listing = require("./routes/listing");
-const reviews = require("./routes/reviews");
+const listingRouter = require("./routes/listing");
+const reviewsRouter = require("./routes/reviews");
+const userRouter = require("./routes/user.js");
 const session = require('express-session') // Using Session for making a temporary cookie
 
 
@@ -78,21 +79,11 @@ main()
 async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/roomio');
 }
-
-// Demo User 
-
-app.get("/demouser", async(req,res)=>{
-    let fakeUser = new User({
-        email: "student@gmail.com",
-        username:"delta-student",
-    });
-    const registeredUser = await User.register(fakeUser,"HelloWorld")
-    res.send(registeredUser)
-})
-                                         
+                               
 // Express Routes
-    app.use("/listing", listing);
-    app.use("/listing/:id/reviews", reviews);
+    app.use("/listing", listingRouter);
+    app.use("/listing/:id/reviews", reviewsRouter);
+    app.use("/",userRouter)
 
 
 
