@@ -5,7 +5,7 @@ const wrapAsync = require("../utils/wrapAsync.js")
 const ExpressError = require("../utils/ExpressError.js")
 const {listingSchemas} = require("../schema.js")
 const Review = require("../models/review.js")
-
+const {isLoggedin} = require("../middlewares.js")
 
 // Joi Validation Function - Listing
     validateListing = async(req,res,next)=>{
@@ -28,7 +28,7 @@ router.get("/",wrapAsync(async (req,res)=>{
 
 
 // New Hotel Route - Specific Route
-router.get("/new",wrapAsync(async (req,res)=>{
+router.get("/new",isLoggedin,wrapAsync(async (req,res)=>{
     res.render("listings/new.ejs")
 }))
 
@@ -39,7 +39,7 @@ router.get("/new",wrapAsync(async (req,res)=>{
 
 
 // Adding DATA - POST Route
-router.post("/", validateListing, wrapAsync(async (req, res) => {
+router.post("/",isLoggedin, validateListing, wrapAsync(async (req, res) => {
     let newListing = new Listing(req.body.listing); // Create instance
     await newListing.save(); // Save to DB
     req.flash("success", "New Listing Created");
@@ -47,7 +47,7 @@ router.post("/", validateListing, wrapAsync(async (req, res) => {
 }));
 
 // Editing Using PUT Request
-router.put("/:id",validateListing,wrapAsync(async(req,res)=>{
+router.put("/:id",isLoggedin,validateListing,wrapAsync(async(req,res)=>{
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id,req.body.listing)
     req.flash("success", "Listing Updated Successfully!")
@@ -55,7 +55,7 @@ router.put("/:id",validateListing,wrapAsync(async(req,res)=>{
 }))
 
 // Deleting Using DELETE Request
-router.delete("/:id",wrapAsync(async(req,res)=>{
+router.delete("/:id",isLoggedin,wrapAsync(async(req,res)=>{
     let {id} = req.params;
     await Listing.findByIdAndDelete(id)
     req.flash("success", "Listing Deleted Succesfully")
@@ -64,7 +64,7 @@ router.delete("/:id",wrapAsync(async(req,res)=>{
 
 // Editing with Dynamic Route
 
-router.get("/:id/edit",wrapAsync(async (req,res)=>{
+router.get("/:id/edit",isLoggedin,wrapAsync(async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
     if(!data){
