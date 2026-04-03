@@ -16,7 +16,7 @@
     </div>
     </div>
 </div>
-
+<% if (currUser && currUser._id.equals(data.owner._id)) { %>
 <div class="btns ">
     <a href="/listing/<%= data._id  %>/edit" class="btn btn-dark col-1 offset-3 add-btn">Edit</a>
     <br>
@@ -25,7 +25,7 @@
         <button type="submit" class="btn btn-dark ">Delete</button>
     </form>
 </div>
-
+<% } %>
 
 <hr>
     <div class="col-8 offset-3 mt-5">

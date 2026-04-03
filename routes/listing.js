@@ -85,10 +85,8 @@ router.get("/:id",wrapAsync(async (req,res)=>{
         req.flash("error", "Listing Doesnot Exist!");
         res.redirect("/listing");
     }else{
-        console.log(data)
     res.render("listings/show.ejs",{data})
     }
-
 }))
 
 module.exports = router;
