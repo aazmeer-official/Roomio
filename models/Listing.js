@@ -31,7 +31,11 @@ const listingSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: "Review"
     }
-    ]
+    ],
+    owner:{
+        type: Schema.Types.ObjectId,
+        ref:"User"
+    }
 });
 // 2. The Argument (listing)
 // Mongoose automatically passes the document that was just deleted into the function as the listing parameter. This is crucial because even though the listing is gone from the "Listings" collection, its data is still held in memory for this function to use one last time.
