@@ -2,22 +2,10 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const Listing = require("../models/Listing.js")
 const wrapAsync = require("../utils/wrapAsync.js")
-const ExpressError = require("../utils/ExpressError.js")
-const {listingSchemas} = require("../schema.js")
 const Review = require("../models/review.js")
 const {isLoggedin} = require("../middlewares.js")
-
-// Joi Validation Function - Listing
-    validateListing = async(req,res,next)=>{
-            try {
-        const value = await listingSchemas.validateAsync(req.body);
-        next()
-    }
-    catch (err) {
-        next(new ExpressError(400, err.message));
-        
-     }
-    }
+const {isOwner} = require("../middlewares.js")
+const {validateListing} = require("../middlewares.js")
 
 
 // Index Route
@@ -48,15 +36,15 @@ router.post("/",isLoggedin, validateListing, wrapAsync(async (req, res) => {
 }));
 
 // Editing Using PUT Request
-router.put("/:id",isLoggedin,validateListing,wrapAsync(async(req,res)=>{
+router.put("/:id",isLoggedin,isOwner,validateListing,wrapAsync(async(req,res)=>{
     let {id} = req.params;
-    await Listing.findByIdAndUpdate(id,req.body.listing)
+    await Listing.findByIdAndUpdate(id,{...req.body.listing})
     req.flash("success", "Listing Updated Successfully!")
     res.redirect("/listing")
 }))
 
 // Deleting Using DELETE Request
-router.delete("/:id",isLoggedin,wrapAsync(async(req,res)=>{
+router.delete("/:id",isLoggedin,isOwner,wrapAsync(async(req,res)=>{
     let {id} = req.params;
     await Listing.findByIdAndDelete(id)
     req.flash("success", "Listing Deleted Succesfully")
@@ -65,7 +53,7 @@ router.delete("/:id",isLoggedin,wrapAsync(async(req,res)=>{
 
 // Editing with Dynamic Route
 
-router.get("/:id/edit",isLoggedin,wrapAsync(async (req,res)=>{
+router.get("/:id/edit",isLoggedin,isOwner,wrapAsync(async (req,res)=>{
     let {id} = req.params;
     let data = await Listing.findById(id)
     if(!data){
