@@ -40,5 +40,22 @@ router.post("/login",passport.authenticate("local", {failureRedirect:"/login",fa
     res.redirect("/listing")
 })
 
+// SignOut Route 
+
+router.get("/signout",(req,res,next)=>{
+    // This block will check if the user is signed in or not 
+    if(!req.isAuthenticated()){
+        req.flash("error","You are not logged in")
+        return res.redirect("/login")
+    }
+    // This block will execute the signout strategy
+    req.logout((err)=>{
+        if(err){
+            return next(err)
+        }
+        req.flash("success","Logged Out Successfully")
+        res.redirect("/listing")
+    })
+})
 
 module.exports = router
