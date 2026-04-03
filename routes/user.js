@@ -4,7 +4,7 @@ const wrapAsync = require("../utils/wrapAsync.js")
 const ExpressError = require("../utils/ExpressError.js")
 const User = require("../models/User.js");
 const passport = require("passport");
-
+const {saveRedirectUrl} = require("../middlewares.js")
 
 // SignUp Route
 
@@ -19,11 +19,15 @@ router.post("/signup",wrapAsync(async(req,res)=>{
             email,username
         })
         const registeredUser =  await User.register(newUser,password)
-        console.log(registeredUser)
-        req.flash("success", "Welcome to Roomio")
-        res.redirect("/listing")
+        req.login(registeredUser,(err)=>{
+            if(err){
+                return next(err)
+            }else{
+            req.flash("success","Welcome to Roomio")
+            res.redirect(req.session.redirectUrl)
+        }
+        })
     }catch(e){
-
         req.flash("error", e.message)
         res.redirect("/signup")
     }
@@ -35,9 +39,14 @@ router.get("/login",(req,res)=>{
     res.render("users/login.ejs")
 })
 
-router.post("/login",passport.authenticate("local", {failureRedirect:"/login",failureFlash:true}), async (req,res)=>{
+router.post("/login",
+    saveRedirectUrl,
+    passport.authenticate("local",
+        {failureRedirect:"/login",
+        failureFlash:true}),
+        async (req,res)=>{
     req.flash("success","Welcome Back to Roomio")
-    res.redirect("/listing")
+    res.redirect(res.locals.redirectUrl || "/listing")
 })
 
 // SignOut Route 
