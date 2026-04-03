@@ -41,6 +41,7 @@ router.get("/new",isLoggedin,wrapAsync(async (req,res)=>{
 // Adding DATA - POST Route
 router.post("/",isLoggedin, validateListing, wrapAsync(async (req, res) => {
     let newListing = new Listing(req.body.listing); // Create instance
+    newListing.owner = req.user._id;
     await newListing.save(); // Save to DB
     req.flash("success", "New Listing Created");
     res.redirect("/listing");
@@ -78,12 +79,13 @@ router.get("/:id/edit",isLoggedin,wrapAsync(async (req,res)=>{
 // Show Route - Dynamic Route
 router.get("/:id",wrapAsync(async (req,res)=>{
     let {id} = req.params;
-    let data = await Listing.findById(id).populate("reviews")
+    let data = await Listing.findById(id).populate("reviews").populate("owner")
     // Agar kissi unknown yan deleted listing ki baat ho rahi ho
     if(!data){
         req.flash("error", "Listing Doesnot Exist!");
         res.redirect("/listing");
     }else{
+        console.log(data)
     res.render("listings/show.ejs",{data})
     }
 

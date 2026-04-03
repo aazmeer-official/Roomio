@@ -24,7 +24,7 @@ router.post("/signup",wrapAsync(async(req,res)=>{
                 return next(err)
             }else{
             req.flash("success","Welcome to Roomio")
-            res.redirect(req.session.redirectUrl)
+            res.redirect(req.session.redirectUrl || "/listing")
         }
         })
     }catch(e){
