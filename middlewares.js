@@ -3,6 +3,8 @@ const ExpressError = require("./utils/ExpressError.js")
 const {listingSchemas} = require("./schema.js")
 const {reviewSchema} = require("./schema.js")
 const Review = require("./models/review")
+
+
 module.exports.isLoggedin = (req, res, next) => {
     if (!req.isAuthenticated()) {
         // Only save the URL if it's a GET request

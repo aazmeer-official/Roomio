@@ -1,24 +1,15 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const Listing = require("../models/Listing.js")
 const wrapAsync = require("../utils/wrapAsync.js")
-const Review = require("../models/review.js")
-const {isLoggedin} = require("../middlewares.js")
-const {isOwner} = require("../middlewares.js")
-const {validateListing} = require("../middlewares.js")
-
+const {isOwner , validateListing , isLoggedin} = require("../middlewares.js")
+const listingController = require("../controllers/listing.js")
 
 // Index Route
-router.get("/",wrapAsync(async (req,res)=>{
-    let datas = await Listing.find()
-    res.render("listings/listing.ejs",{datas})
-}))
+router.get("/",wrapAsync(listingController.index))
 
 
 // New Hotel Route - Specific Route
-router.get("/new",isLoggedin,wrapAsync(async (req,res)=>{
-    res.render("listings/new.ejs")
-}))
+router.get("/new",isLoggedin,wrapAsync(listingController.renderNewForm))
 
 // Note Specific Route ka hameesha dynamic sy upar rkho
 
@@ -27,54 +18,19 @@ router.get("/new",isLoggedin,wrapAsync(async (req,res)=>{
 
 
 // Adding DATA - POST Route
-router.post("/",isLoggedin, validateListing, wrapAsync(async (req, res) => {
-    let newListing = new Listing(req.body.listing); // Create instance
-    newListing.owner = req.user._id;
-    await newListing.save(); // Save to DB
-    req.flash("success", "New Listing Created");
-    res.redirect("/listing");
-}));
+router.post("/",isLoggedin, validateListing, wrapAsync(listingController.addData));
 
 // Editing Using PUT Request
-router.put("/:id",isLoggedin,isOwner,validateListing,wrapAsync(async(req,res)=>{
-    let {id} = req.params;
-    await Listing.findByIdAndUpdate(id,{...req.body.listing})
-    req.flash("success", "Listing Updated Successfully!")
-    res.redirect("/listing")
-}))
+router.put("/:id",isLoggedin,isOwner,validateListing,wrapAsync(listingController.editData))
 
 // Deleting Using DELETE Request
-router.delete("/:id",isLoggedin,isOwner,wrapAsync(async(req,res)=>{
-    let {id} = req.params;
-    await Listing.findByIdAndDelete(id)
-    req.flash("success", "Listing Deleted Succesfully")
-    res.redirect("/listing")
-}))
+router.delete("/:id",isLoggedin,isOwner,wrapAsync(listingController.deleteData))
 
 // Editing with Dynamic Route
 
-router.get("/:id/edit",isLoggedin,isOwner,wrapAsync(async (req,res)=>{
-    let {id} = req.params;
-    let data = await Listing.findById(id)
-    if(!data){
-    req.flash("error", "Listing Doesnot Exist!");
-    res.redirect("/listing");
-    }else{
-    res.render("listings/edit.ejs",{data})
-    }
-}))
+router.get("/:id/edit",isLoggedin,isOwner,wrapAsync(listingController.dynamicEdit))
 
 // Show Route - Dynamic Route
-router.get("/:id",wrapAsync(async (req,res)=>{
-    let {id} = req.params;
-    let data = await Listing.findById(id).populate({path:"reviews",populate:{path:"author"},}).populate("owner")
-    // Agar kissi unknown yan deleted listing ki baat ho rahi ho
-    if(!data){
-        req.flash("error", "Listing Doesnot Exist!");
-        res.redirect("/listing");
-    }else{
-    res.render("listings/show.ejs",{data})
-    }
-}))
+router.get("/:id",wrapAsync(listingController.showData))
 
 module.exports = router;
