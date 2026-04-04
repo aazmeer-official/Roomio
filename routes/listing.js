@@ -67,7 +67,7 @@ router.get("/:id/edit",isLoggedin,isOwner,wrapAsync(async (req,res)=>{
 // Show Route - Dynamic Route
 router.get("/:id",wrapAsync(async (req,res)=>{
     let {id} = req.params;
-    let data = await Listing.findById(id).populate("reviews").populate("owner")
+    let data = await Listing.findById(id).populate({path:"reviews",populate:{path:"author"},}).populate("owner")
     // Agar kissi unknown yan deleted listing ki baat ho rahi ho
     if(!data){
         req.flash("error", "Listing Doesnot Exist!");

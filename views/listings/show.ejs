@@ -27,6 +27,8 @@
 </div>
 <% } %>
 
+
+<% if(currUser){ %>
 <hr>
     <div class="col-8 offset-3 mt-5">
         <h4>Leave a Review</h4>
@@ -53,7 +55,7 @@
             </div>
         </form>
     </div>
-
+<% } %>
 
 <hr>
 <div class="row offset-3">
@@ -61,7 +63,7 @@
 <% for(review of data.reviews){  %>
     <div class="card col-5 ms-3 mb-3">
     <div class="card-body">
-        <h5 class="card-title mt-2">Author</h5>
+        <h5 class="card-title mt-2">@<%= review.author.username  %></h5>
         <p class="card-text"><%= review.comment %></p>
         <h6 class="card-subtitle mt-2 mb-2 text-body-secondary"><%= review.rating %> Stars</h6>
         <form action="/listing/<%= data.id %>/reviews/<%= review.id %>?_method=DELETE" method="post">
