@@ -1,3 +1,9 @@
+// .env File
+if(process.env.NODE_ENV != "production"){
+    require('dotenv').config()
+}
+// console.log(process.env.SECRET)
+
 // BASIC REQUIREMENTS
 const express = require("express");
 const app = express();

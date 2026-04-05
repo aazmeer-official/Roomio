@@ -10,8 +10,11 @@ module.exports.renderNewForm = async (req,res)=>{
 }
 // Adding Data
 module.exports.addData = async (req, res) => {
+    let url = req.file.path;
+    let filename = req.file.filename;
     let newListing = new Listing(req.body.listing); // Create instance
     newListing.owner = req.user._id;
+    newListing.image = {url,filename}
     await newListing.save(); // Save to DB
     req.flash("success", "New Listing Created");
     res.redirect("/listing");
@@ -19,7 +22,13 @@ module.exports.addData = async (req, res) => {
 // Edit Data
 module.exports.editData = async(req,res)=>{
     let {id} = req.params;
-    await Listing.findByIdAndUpdate(id,{...req.body.listing})
+    let listing = await Listing.findByIdAndUpdate(id,{...req.body.listing})
+    if(typeof req.file != "undefined"){
+    let url = req.file.path;
+    let filename = req.file.filename;
+    listing.image = {url,filename};
+    await listing.save();
+    }
     req.flash("success", "Listing Updated Successfully!")
     res.redirect("/listing")
 }

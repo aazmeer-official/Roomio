@@ -4,7 +4,7 @@
     <% for (let data of datas){ %>
         <a href="/listing/<%= data._id %>" class="listingLink">
         <div class=" card card-listing col">
-        <img src="<%= data.image %>" class="card-img-top" alt="..." style="height: 20rem;">
+        <img src="<%= data.image.url %>" class="card-img-top" alt="..." style="height: 20rem;">
         <div class="card-img-overlay"></div>
         <div class="card-body">
             <p class="card-text text-bold"><%= data.title %></p>
