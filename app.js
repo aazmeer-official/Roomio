@@ -19,7 +19,8 @@ const listingRouter = require("./routes/listing");
 const reviewsRouter = require("./routes/reviews");
 const userRouter = require("./routes/user.js");
 const session = require('express-session') // Using Session for making a temporary cookie
-
+const dns = require("dns");
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 // MONGODB
 const dbURL = process.env.LINK;
 
