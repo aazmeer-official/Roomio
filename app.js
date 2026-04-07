@@ -19,6 +19,7 @@ const listingRouter = require("./routes/listing");
 const reviewsRouter = require("./routes/reviews");
 const userRouter = require("./routes/user.js");
 const session = require('express-session') // Using Session for making a temporary cookie
+const MongoStore = require('connect-mongo').default;
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 // MONGODB
@@ -29,10 +30,26 @@ const passport = require('passport')
 const LocalStrategy = require("passport-local")
 const User = require("./models/User.js")
 
+// MongosStore
+
+const store = MongoStore.create({ 
+    mongoUrl: dbURL,
+    crypto:{
+        secret : process.env.SECRET
+    },
+    touchAfter: 24 * 3600
+ })
+
+// Error Handling for Store
+
+store.on("error", ()=>{
+    console.log("ERROR in Store", err)
+})
 
 // Using Flash
 const flash = require('connect-flash');
 const sessionOptions = {
+    store,
     secret: process.env.SECRET,
     resave:false,
     saveUninitialized:true,
@@ -42,6 +59,9 @@ const sessionOptions = {
         httpOnly: true
     }
 };
+
+
+
 
 // EXPRESS REQUIREMENTS
 
