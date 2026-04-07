@@ -20,6 +20,8 @@ const reviewsRouter = require("./routes/reviews");
 const userRouter = require("./routes/user.js");
 const session = require('express-session') // Using Session for making a temporary cookie
 
+// MONGODB
+const dbURL = process.env.LINK;
 
 // Passport - Authentication
 const passport = require('passport')
@@ -84,7 +86,7 @@ main()
 .then(()=>{console.log("connection Successful")})
 .catch(err => console.log(err));
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/roomio');
+  await mongoose.connect(dbURL);
 }
                                
 // Express Routes
