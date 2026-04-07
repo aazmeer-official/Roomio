@@ -73,9 +73,9 @@ app.use(methodOverride('_method'))
 app.engine('ejs', ejsMate);  // use ejs-locals for all ejs templates:
 
 // Express App
-    // app.get("/",(req,res)=>{
-    //     res.send("response!")
-    // }) 
+    app.get("/",(req,res)=>{
+        res.redirect("/listing")
+    }) 
 
 
 // Using Flash
