@@ -33,7 +33,7 @@ const User = require("./models/User.js")
 // Using Flash
 const flash = require('connect-flash');
 const sessionOptions = {
-    secret: "mysupersecretstring",
+    secret: process.env.SECRET,
     resave:false,
     saveUninitialized:true,
     cookie : {
