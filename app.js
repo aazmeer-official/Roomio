@@ -22,7 +22,7 @@ const session = require('express-session') // Using Session for making a tempora
 
 // MONGODB
 const dbURL = process.env.LINK;
-
+console.log(dbURL)
 // Passport - Authentication
 const passport = require('passport')
 const LocalStrategy = require("passport-local")
